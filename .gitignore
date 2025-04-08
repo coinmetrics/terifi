@@ -1,0 +1,40 @@
+# Ignore all files by default
+*
+
+# Allow Python files
+!*.py
+
+# Allow specific documentation files
+!*.md
+!README*
+!LICENSE*
+!.gitignore
+
+# Ignore Python cache directories
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Ignore virtual environments
+.venv/
+venv/
+ENV/
+env/
+
+# Ignore IDE files and directories
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# Ignore all data directories
+market-greeks/
+market-impliedvolatility/
+market-contractprices/
+market-openinterest/
+analysis/
+
+# Ignore Jupyter Notebook files
+*.ipynb
+.ipynb_checkpoints/
