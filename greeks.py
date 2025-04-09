@@ -11,7 +11,7 @@ def init_client():
         raise ValueError("CM_API_KEY environment variable not set")
     return CoinMetricsClient(api_key)
 
-async def fetch_greeks_for_expiry(client, markets, expiry_date, days_before_expiry=22):
+async def fetch_greeks_for_expiry(client, markets, expiry_date, days_before_expiry=22, granularity="1d"):
     """
     Fetch Greeks data for markets with the same expiry date.
     
@@ -20,6 +20,7 @@ async def fetch_greeks_for_expiry(client, markets, expiry_date, days_before_expi
         markets: List of market identifiers with the same expiry date
         expiry_date: Expiry date (datetime.date)
         days_before_expiry: Number of days before expiry to collect data
+        granularity: Data granularity (e.g., "1d", "1h")
     """
     # Calculate data period based on expiry date
     start_time, end_time = market_utils.calculate_data_period_for_expiry(
@@ -35,7 +36,8 @@ async def fetch_greeks_for_expiry(client, markets, expiry_date, days_before_expi
             markets=markets,
             start_time=start_time,
             end_time=end_time,
-            page_size=10000
+            page_size=10000,
+            granularity=granularity,
         ).parallel().export_to_csv_files()
         
         print(f"Successfully saved Greeks data for expiry date {expiry_date}")
@@ -46,7 +48,7 @@ async def fetch_greeks_for_expiry(client, markets, expiry_date, days_before_expi
         return False
 
 # Save Greeks data for multiple expiration dates
-async def save_greeks_data(start_date, end_date, days_before_expiry=22):
+async def save_greeks_data(start_date, end_date, days_before_expiry=22, granularity="1d"):
     """
     Save Greeks data for all markets expiring between start_date and end_date.
     For each expiry date, collect data from (expiry_date - days_before_expiry) to expiry_date.
@@ -55,6 +57,7 @@ async def save_greeks_data(start_date, end_date, days_before_expiry=22):
         start_date: Start date for expiry range (datetime)
         end_date: End date for expiry range (datetime)
         days_before_expiry: Number of days before expiry to collect data
+        granularity: Data granularity (e.g., "1d", "1h")
     """
     print(f"Looking for options expiring between {start_date.strftime('%Y-%m-%d')} and {end_date.strftime('%Y-%m-%d')}")
     
@@ -85,7 +88,8 @@ async def save_greeks_data(start_date, end_date, days_before_expiry=22):
             client,
             markets,
             expiry_date,
-            days_before_expiry=days_before_expiry
+            days_before_expiry=days_before_expiry,
+            granularity=granularity
         ))
     
     # Run tasks in parallel (with a concurrency limit)
@@ -118,10 +122,14 @@ async def main():
     print(f"Collecting Greeks data for options expiring between {start_date.strftime('%Y-%m-%d')} and {end_date.strftime('%Y-%m-%d')}")
     print(f"For each expiry date, will collect data from (expiry_date - {days_before_expiry} days) to expiry_date")
     
+    # Default granularity
+    granularity = "1d"
+    
     await save_greeks_data(
         start_date, 
         end_date, 
-        days_before_expiry=days_before_expiry
+        days_before_expiry=days_before_expiry,
+        granularity=granularity
     )
 
 if __name__ == "__main__":

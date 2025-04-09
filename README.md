@@ -58,6 +58,7 @@ uv run main.py
 - `--start-date YYYY-MM-DD`: Specify start date for option expiry search
 - `--end-date YYYY-MM-DD`: Specify end date for option expiry search
 - `--days-before-expiry N`: Collect data starting N days before each expiry (default: 22)
+- `--granularity VALUE`: Set data granularity (default: 1d, options: 1d, 1h, etc.)
 - `--greeks-only`: Only collect Greeks data
 - `--iv-only`: Only collect implied volatility data
 - `--prices-only`: Only collect contract price data
@@ -73,6 +74,11 @@ uv run main.py --greeks-only --start-date 2025-06-01 --end-date 2025-07-01
 Collect all data types for options expiring in the next 60 days, starting 30 days before expiry:
 ```bash
 uv run main.py --end-date $(date -d "+60 days" +%Y-%m-%d) --days-before-expiry 30
+```
+
+Collect hourly granularity data for options expiring in the next 7 days:
+```bash
+uv run main.py --end-date $(date -d "+7 days" +%Y-%m-%d) --granularity 1h
 ```
 
 ### Analyzing Data

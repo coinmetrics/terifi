@@ -16,6 +16,8 @@ async def main():
     parser.add_argument('--end-date', type=str, help='End date in YYYY-MM-DD format')
     parser.add_argument('--days-before-expiry', type=int, default=22, 
                        help='Days before expiry to collect data (default: 22)')
+    parser.add_argument('--granularity', type=str, default='1d',
+                       help='Data granularity (default: 1d). Options: 1d, 1h, etc.')
     parser.add_argument('--greeks-only', action='store_true', 
                        help='Only collect Greeks data')
     parser.add_argument('--iv-only', action='store_true', 
@@ -38,10 +40,12 @@ async def main():
         start_date = end_date - timedelta(days=30)  # Default to 30 days before end date
     
     days_before_expiry = args.days_before_expiry
+    granularity = args.granularity
     
     print("\n===== Starting Deribit Options Data Collection =====\n")
     print(f"Looking for options expiring between {start_date.strftime('%Y-%m-%d')} and {end_date.strftime('%Y-%m-%d')}")
     print(f"For each expiry date, collecting data starting {days_before_expiry} days before expiry")
+    print(f"Data granularity: {granularity}")
     
     # Determine which data types to collect
     if args.greeks_only or args.iv_only or args.prices_only or args.oi_only:
@@ -49,23 +53,23 @@ async def main():
         tasks = []
         if args.greeks_only:
             print("Collecting Greeks data only")
-            tasks.append(greeks.save_greeks_data(start_date, end_date, days_before_expiry=days_before_expiry))
+            tasks.append(greeks.save_greeks_data(start_date, end_date, days_before_expiry=days_before_expiry, granularity=granularity))
         if args.iv_only:
             print("Collecting implied volatility data only")
-            tasks.append(implied_volatility.save_implied_volatility_data(start_date, end_date, days_before_expiry=days_before_expiry))
+            tasks.append(implied_volatility.save_implied_volatility_data(start_date, end_date, days_before_expiry=days_before_expiry, granularity=granularity))
         if args.prices_only:
             print("Collecting contract price data only")
-            tasks.append(contract_prices.save_contract_price_data(start_date, end_date, days_before_expiry=days_before_expiry))
+            tasks.append(contract_prices.save_contract_price_data(start_date, end_date, days_before_expiry=days_before_expiry, granularity=granularity))
         if args.oi_only:
             print("Collecting open interest data only")
-            tasks.append(open_interest.save_open_interest_data(start_date, end_date, days_before_expiry=days_before_expiry))
+            tasks.append(open_interest.save_open_interest_data(start_date, end_date, days_before_expiry=days_before_expiry, granularity=granularity))
     else:
         # Collect all data types
         tasks = [
-            greeks.save_greeks_data(start_date, end_date, days_before_expiry=days_before_expiry),
-            contract_prices.save_contract_price_data(start_date, end_date, days_before_expiry=days_before_expiry),
-            implied_volatility.save_implied_volatility_data(start_date, end_date, days_before_expiry=days_before_expiry),
-            open_interest.save_open_interest_data(start_date, end_date, days_before_expiry=days_before_expiry)
+            greeks.save_greeks_data(start_date, end_date, days_before_expiry=days_before_expiry, granularity=granularity),
+            contract_prices.save_contract_price_data(start_date, end_date, days_before_expiry=days_before_expiry, granularity=granularity),
+            implied_volatility.save_implied_volatility_data(start_date, end_date, days_before_expiry=days_before_expiry, granularity=granularity),
+            open_interest.save_open_interest_data(start_date, end_date, days_before_expiry=days_before_expiry, granularity=granularity)
         ]
     
     await asyncio.gather(*tasks)
