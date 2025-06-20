@@ -1,4 +1,4 @@
-# Terifi - Bitcoin Options Data Collection Tool
+# Terifi - Getting Started with Options Data
 
 Terifi is a tool for downloading and analyzing historical options data from Deribit, focusing on Bitcoin options. It collects Greeks, implied volatility, contract prices, and open interest data using the CoinMetrics API.
 
